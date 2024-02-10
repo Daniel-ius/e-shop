@@ -28,8 +28,8 @@ class Carts
     private ?DateTimeInterface $updatedAt;
     #[ORM\Column(type: 'string', length: 255)]
     private string $status = self::STATUS_CART;
-    #[ORM\Column]
-    private ?float $total = null;
+    #[ORM\Column(type: 'float',options: ['precision' => 10,'scale' => 2, 'default' => 0.0])]
+    private ?float $total = 0;
 
     public function __construct()
     {

@@ -48,26 +48,4 @@ class OrdersHistory
 
         return $this;
     }
-
-    public function getCarts(): ?Carts
-    {
-        return $this->carts;
-    }
-
-    public function setCarts(?Carts $carts): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($carts === null && $this->carts !== null) {
-            $this->carts->setOrderhistory(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($carts !== null && $carts->getOrderhistory() !== $this) {
-            $carts->setOrderhistory($this);
-        }
-
-        $this->carts = $carts;
-
-        return $this;
-    }
 }
