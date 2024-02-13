@@ -14,6 +14,10 @@ use DateTimeInterface;
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
 class Users implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    const STATUS_ACTIVE='active';
+    const STATUS_DEACTIVATED='deactivated';
+    const STATUS_DELETED='deleted';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -62,6 +66,9 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(targetEntity: OrdersHistory::class, mappedBy: 'user')]
     private Collection $ordersHistories;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeInterface $creationDate = null;
 
     public function __construct()
     {
@@ -284,6 +291,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
                 $ordersHistory->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreationDate(): ?\DateTimeInterface
+    {
+        return $this->creationDate;
+    }
+
+    public function setCreationDate(\DateTimeInterface $creationDate): static
+    {
+        $this->creationDate = $creationDate;
 
         return $this;
     }
