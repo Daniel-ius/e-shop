@@ -8,7 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoriesRepository::class)]
-class Categories
+#[ORM\Table(name: 'categories')]
+class Category
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -18,7 +19,7 @@ class Categories
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(targetEntity: Products::class, mappedBy: 'categories', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'categories', orphanRemoval: true)]
     private Collection $Products;
 
     public function __construct()
@@ -44,14 +45,14 @@ class Categories
     }
 
     /**
-     * @return Collection<int, Products>
+     * @return Collection<int, Product>
      */
     public function getProducts(): Collection
     {
         return $this->Products;
     }
 
-    public function addProduct(Products $product): static
+    public function addProduct(Product $product): static
     {
         if (!$this->Products->contains($product)) {
             $this->Products->add($product);
@@ -61,7 +62,7 @@ class Categories
         return $this;
     }
 
-    public function removeProduct(Products $product): static
+    public function removeProduct(Product $product): static
     {
         if ($this->Products->removeElement($product)) {
             // set the owning side to null (unless already changed)

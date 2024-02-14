@@ -7,7 +7,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductsRepository::class)]
-class Products
+#[ORM\Table(name: 'products')]
+class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,7 +24,7 @@ class Products
 
     #[ORM\ManyToOne(inversedBy: 'Products')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Categories $categories = null;
+    private ?Category $categories = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private $images = null;
@@ -63,12 +64,12 @@ class Products
         return $this->id;
     }
 
-    public function getCategories(): ?Categories
+    public function getCategories(): ?Category
     {
         return $this->categories;
     }
 
-    public function setCategories(?Categories $categories): static
+    public function setCategories(?Category $categories): static
     {
         $this->categories = $categories;
 

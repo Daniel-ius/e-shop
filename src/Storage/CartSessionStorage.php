@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace App\Storage;
 
-use App\Entity\Carts;
+use App\Entity\Cart;
 use App\Repository\CartsRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -23,16 +23,16 @@ class CartSessionStorage
         return $this->requestStack->getSession()->get(self::CART_KEY_NAME);
     }
 
-    public function setCart(Carts $cart):void
+    public function setCart(Cart $cart):void
     {
         $this->requestStack->getSession()->set(self::CART_KEY_NAME,$cart->getId());
     }
 
-    public function getCart():?Carts
+    public function getCart():?Cart
     {
         return $this->cartsRepository->findOneBy([
             'id'=>$this->getCartId(),
-            'status'=>Carts::STATUS_CART,
+            'status'=>Cart::STATUS_CART,
         ]);
     }
 }

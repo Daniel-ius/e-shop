@@ -3,23 +3,23 @@ declare(strict_types=1);
 namespace App\Factory;
 
 use App\Entity\CartItems;
-use App\Entity\Carts;
-use App\Entity\Products;
+use App\Entity\Cart;
+use App\Entity\Product;
 
 class CartFactory
 {
-    public function create():Carts
+    public function create():Cart
     {
-        $cart = new Carts();
+        $cart = new Cart();
         $cart
-            ->setStatus(Carts::STATUS_CART)
+            ->setStatus(Cart::STATUS_CART)
             ->setCreatedAt(new \DateTime())
             ->setUpdatedAt(new \DateTime())
             ->setTotal();
         return $cart;
     }
 
-    public function createItem(Products $products):CartItems
+    public function createItem(Product $products):CartItems
     {
         $item=new CartItems();
         $item->setItem($products);

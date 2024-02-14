@@ -19,11 +19,11 @@ class CartItems
     #[ORM\Column(type: 'float', precision: 2, scale: 2)]
     private float $totalPrice = 0.0;
     #[ORM\ManyToOne]
-    private ?Products $item = null;
+    private ?Product $item = null;
 
     #[ORM\ManyToOne(inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Carts $carts = null;
+    private ?Cart $carts = null;
     public function getQuantity(): ?int
     {
         return $this->quantity;
@@ -48,24 +48,24 @@ class CartItems
         return $this->id;
     }
 
-    public function getItem(): ?Products
+    public function getItem(): ?Product
     {
         return $this->item;
     }
 
-    public function setItem(?Products $item): static
+    public function setItem(?Product $item): static
     {
         $this->item = $item;
 
         return $this;
     }
 
-    public function getCarts(): ?Carts
+    public function getCarts(): ?Cart
     {
         return $this->carts;
     }
 
-    public function setCarts(?Carts $carts): static
+    public function setCarts(?Cart $carts): static
     {
         $this->carts = $carts;
 

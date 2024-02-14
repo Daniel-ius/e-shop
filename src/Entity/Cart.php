@@ -9,7 +9,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CartsRepository::class)]
-class Carts
+#[ORM\Table(name: 'carts')]
+class Cart
 {
     const STATUS_CART='cart';
     const STATUS_CHECKOUT = 'checkout';
@@ -19,7 +20,7 @@ class Carts
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToMany(targetEntity: cartitems::class, mappedBy: 'carts')]
+    #[ORM\OneToMany(targetEntity: CartItems::class, mappedBy: 'carts')]
     private Collection $items;
 
     #[ORM\Column(type: 'datetime')]

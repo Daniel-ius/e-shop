@@ -2,7 +2,7 @@
 
 namespace App\Tests;
 
-use App\Entity\Users;
+use App\Entity\User;
 use App\Factory\UserFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -14,7 +14,7 @@ class UserFactoryTest extends TestCase
         $hasherMock = $this->createMock(UserPasswordHasherInterface::class);
         $hasherMock->expects($this->once())
             ->method('hashPassword')
-            ->with($this->isInstanceOf(Users::class), $this->equalTo('password'))
+            ->with($this->isInstanceOf(User::class), $this->equalTo('password'))
             ->willReturn('hashed_password');
 
         $userData = [
@@ -42,7 +42,7 @@ class UserFactoryTest extends TestCase
         $this->assertEquals('123 Main St', $user->getStreet());
         $this->assertEquals('Anytown', $user->getCity());
         $this->assertEquals('12345', $user->getZipCode());
-        $this->assertEquals(Users::STATUS_ACTIVE, $user->getStatus());
+        $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
         $this->assertInstanceOf(\DateTime::class, $user->getCreationDate());
     }
 }

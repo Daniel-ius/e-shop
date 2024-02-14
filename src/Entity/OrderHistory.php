@@ -6,7 +6,7 @@ use App\Repository\OrdersHistoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrdersHistoryRepository::class)]
-class OrdersHistory
+class OrderHistory
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -14,10 +14,10 @@ class OrdersHistory
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'ordersHistories')]
-    private ?Users $user = null;
+    private ?User $user = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Carts $cart = null;
+    private ?Cart $cart = null;
 
 
     public function getId(): ?int
@@ -25,24 +25,24 @@ class OrdersHistory
         return $this->id;
     }
 
-    public function getUser(): ?Users
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(?Users $user): static
+    public function setUser(?User $user): static
     {
         $this->user = $user;
 
         return $this;
     }
 
-    public function getCart(): ?Carts
+    public function getCart(): ?Cart
     {
         return $this->cart;
     }
 
-    public function setCart(?Carts $cart): static
+    public function setCart(?Cart $cart): static
     {
         $this->cart = $cart;
 

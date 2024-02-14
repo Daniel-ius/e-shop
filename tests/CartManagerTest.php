@@ -3,8 +3,8 @@
 namespace App\Tests;
 
 use App\Entity\CartItems;
-use App\Entity\Carts;
-use App\Entity\Products;
+use App\Entity\Cart;
+use App\Entity\Product;
 use App\Factory\CartFactory;
 use App\Manager\CartManager;
 use App\Storage\CartSessionStorage;
@@ -24,7 +24,7 @@ class CartManagerTest extends TestCase
         $cartFactoryMock=$this->createMock(CartFactory::class);
         $cartFactoryMock->expects($this->once())
             ->method('create')
-            ->willReturn(new Carts());
+            ->willReturn(new Cart());
 
         $entityManagerMock=$this->createMock(EntityManagerInterface::class);
 
@@ -32,12 +32,12 @@ class CartManagerTest extends TestCase
 
         $cart=$cartManagerMock->getCurrentCart();
 
-        $this->assertInstanceOf(Carts::class,$cart);
+        $this->assertInstanceOf(Cart::class,$cart);
     }
 
     public function test_getCurrentCartWithExistingSession()
     {
-        $existingCart = new Carts();
+        $existingCart = new Cart();
 
         $cartSessionStorageMock = $this->createMock(CartSessionStorage::class);
         $cartSessionStorageMock->expects($this->once())
@@ -59,7 +59,7 @@ class CartManagerTest extends TestCase
 
     public function test_save()
     {
-        $cart = new Carts();
+        $cart = new Cart();
 
         $cartSessionStorageMock = $this->createMock(CartSessionStorage::class);
         $cartSessionStorageMock->expects($this->once())
@@ -79,8 +79,8 @@ class CartManagerTest extends TestCase
     }
     public function test_removeItem()
     {
-        $cart = new Carts();
-        $item = new Products();
+        $cart = new Cart();
+        $item = new Product();
         $cartItem= new CartItems();
          $cartItem->setItem($item);
          $cartItem->setQuantity(1);

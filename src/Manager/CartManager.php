@@ -2,8 +2,8 @@
 
 namespace App\Manager;
 
-use App\Entity\Carts;
-use App\Entity\Products;
+use App\Entity\Cart;
+use App\Entity\Product;
 use App\Factory\CartFactory;
 use App\Storage\CartSessionStorage;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +19,7 @@ class CartManager
         $this->cartFactory=$cartFactory;
         $this->entityManager=$entityManager;
     }
-    public function getCurrentCart():Carts
+    public function getCurrentCart():Cart
     {
         $cart=$this->cartSessionStorage->getCart();
         if (!$cart){
@@ -28,7 +28,7 @@ class CartManager
         return $cart;
     }
 
-    public function save(Carts $cart):void
+    public function save(Cart $cart):void
     {
         $this->entityManager->persist($cart);
         $this->entityManager->flush();

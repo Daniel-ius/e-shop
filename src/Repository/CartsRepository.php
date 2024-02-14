@@ -2,23 +2,23 @@
 
 namespace App\Repository;
 
-use App\Entity\Carts;
+use App\Entity\Cart;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Carts>
+ * @extends ServiceEntityRepository<Cart>
  *
- * @method Carts|null find($id, $lockMode = null, $lockVersion = null)
- * @method Carts|null findOneBy(array $criteria, array $orderBy = null)
- * @method Carts[]    findAll()
- * @method Carts[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Cart|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Cart|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Cart[]    findAll()
+ * @method Cart[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CartsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Carts::class);
+        parent::__construct($registry, Cart::class);
     }
 
 //    /**

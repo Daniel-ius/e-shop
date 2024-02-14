@@ -3,16 +3,17 @@
 namespace App\Entity;
 
 use App\Repository\UsersRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use DateTimeInterface;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
-class Users implements UserInterface, PasswordAuthenticatedUserInterface
+#[ORM\Table(name: 'users')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     const STATUS_ACTIVE='active';
     const STATUS_DEACTIVATED='deactivated';
@@ -46,7 +47,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $phoneNumber = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable: true)]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
@@ -64,10 +65,10 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $status = null;
 
-    #[ORM\OneToMany(targetEntity: OrdersHistory::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: OrderHistory::class, mappedBy: 'user')]
     private Collection $ordersHistories;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $creationDate = null;
 
     public function __construct()
@@ -266,14 +267,14 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, OrdersHistory>
+     * @return Collection<int, OrderHistory>
      */
     public function getOrdersHistories(): Collection
     {
         return $this->ordersHistories;
     }
 
-    public function addOrdersHistory(OrdersHistory $ordersHistory): static
+    public function addOrdersHistory(OrderHistory $ordersHistory): static
     {
         if (!$this->ordersHistories->contains($ordersHistory)) {
             $this->ordersHistories->add($ordersHistory);
@@ -283,7 +284,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeOrdersHistory(OrdersHistory $ordersHistory): static
+    public function removeOrdersHistory(OrderHistory $ordersHistory): static
     {
         if ($this->ordersHistories->removeElement($ordersHistory)) {
             // set the owning side to null (unless already changed)
