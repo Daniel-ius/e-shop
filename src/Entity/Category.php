@@ -6,16 +6,27 @@ use App\Repository\CategoriesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: CategoriesRepository::class)]
 #[ORM\Table(name: 'categories')]
-class Category
+#[UniqueEntity(fields: ['name'], message: 'This name is already taken')]
+class Category implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[NotBlank(message: "Please enter a name")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "The name must be at least 3 characters long",
+        maxMessage: "The name must be at most 255 characters long"
+    )]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
@@ -72,5 +83,14 @@ class Category
         }
 
         return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return array(
+            'id'=>$this->id,
+            'name'=>$this->name,
+            'products'=>$this->Products
+        );
     }
 }

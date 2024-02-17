@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CartsRepository::class)]
 #[ORM\Table(name: 'carts')]
-class Cart
+class Cart implements \JsonSerializable
 {
     const STATUS_CART='cart';
     const STATUS_CHECKOUT = 'checkout';
@@ -116,5 +116,17 @@ class Cart
         };
 
         return $this;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return array(
+            'id'=>$this->id,
+            'items'=>$this->items,
+            'createdAt'=>$this->createdAt,
+            'updatedAt'=>$this->updatedAt,
+            'total'=>$this->total,
+            'status'=>$this->status
+        );
     }
 }

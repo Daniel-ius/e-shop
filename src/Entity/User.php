@@ -8,22 +8,27 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
 #[ORM\Table(name: 'users')]
+#[UniqueEntity(fields: ['username'], message: 'Username already exist')]
+#[UniqueEntity(fields: ['email'], message: 'Email already exist')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    const STATUS_ACTIVE='active';
-    const STATUS_DEACTIVATED='deactivated';
-    const STATUS_DELETED='deleted';
+    const STATUS_ACTIVE = 'active';
+    const STATUS_DEACTIVATED = 'deactivated';
+    const STATUS_DELETED = 'deleted';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
     #[ORM\Column(length: 180, unique: true)]
+    #[NotBlank]
     private ?string $username = null;
 
     #[ORM\Column]
@@ -33,42 +38,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[NotBlank]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[NotBlank]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
+    #[NotBlank]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[NotBlank]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[NotBlank]
     private ?string $phoneNumber = null;
 
-    #[ORM\Column(length: 255,nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[NotBlank]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
+    #[NotBlank]
     private ?string $street = null;
 
     #[ORM\Column(length: 255)]
+    #[NotBlank]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
+    #[NotBlank]
     private ?string $zipCode = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[NotBlank]
     private ?DateTimeInterface $lastLogin = null;
 
     #[ORM\Column(length: 255)]
+    #[NotBlank]
     private ?string $status = null;
 
     #[ORM\OneToMany(targetEntity: OrderHistory::class, mappedBy: 'user')]
     private Collection $ordersHistories;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[NotBlank]
     private ?\DateTimeInterface $creationDate = null;
 
     public function __construct()
