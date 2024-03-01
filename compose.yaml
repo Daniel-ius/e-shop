@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-  ###> doctrine/doctrine-bundle ###
   database:
     image: mariadb:latest
     environment:
@@ -9,16 +8,8 @@ services:
       - MARIADB_DATABASE=app
       - MARIADB_USER=root
       - MARIADB_PASSWORD=root
-    restart: always
+    restart: on-failure
     ports:
       - 3306:3306
     volumes:
       - .docker/database:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
-
-volumes:
-  ###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###

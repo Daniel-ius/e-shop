@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
@@ -51,6 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     #[NotBlank]
+    #[Assert\Email]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
@@ -74,7 +76,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $zipCode = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[NotBlank]
     private ?DateTimeInterface $lastLogin = null;
 
     #[ORM\Column(length: 255)]
@@ -88,9 +89,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[NotBlank]
     private ?\DateTimeInterface $creationDate = null;
 
+    #[ORM\OneToMany(targetEntity: Cart::class, mappedBy: 'user',cascade: ['persist','remove'])]
+    private Collection $carts;
+
     public function __construct()
     {
         $this->ordersHistories = new ArrayCollection();
+        $this->carts=new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -223,6 +228,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getCarts(): Collection
+    {
+        return $this->carts;
+    }
+
+    public function setCarts(Collection $carts): void
+    {
+        $this->carts = $carts;
+    }
     public function getStreet(): ?string
     {
         return $this->street;
@@ -323,5 +337,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->creationDate = $creationDate;
 
         return $this;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'username' => $this->username,
+            'roles' => $this->getRoles(), // Filter sensitive roles if needed
+            'firstName' => $this->getFirstName(),
+            'lastName' => $this->getLastName(),
+            'email' => $this->getEmail(),
+            'phoneNumber' => $this->getPhoneNumber(),
+            'address' => $this->getAddress(),
+            'createdAt' => $this->getCreationDate()->format('Y-m-d H:i:s'),
+            'carts' => $this->getCarts()->map(fn (Cart $cart) => [
+                'id' => $cart->getId(),
+                'status' => $cart->getStatus(),
+            ])->toArray(),
+    ];
     }
 }

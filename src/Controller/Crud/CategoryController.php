@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Crud;
 
 use App\Entity\Category;
 use App\Repository\CategoriesRepository;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[Route('/category')]
+#[Route('/categories')]
 class CategoryController extends AbstractController
 {
     private ValidatorInterface $validator;
@@ -36,7 +36,7 @@ class CategoryController extends AbstractController
         }
         return new JsonResponse([
             'success' => true,
-            'categories' => $response,
+            'data' => $response,
         ]);
     }
 
@@ -45,7 +45,7 @@ class CategoryController extends AbstractController
     {
         return new JsonResponse([
             'success' => true,
-            'category' => $category,
+            'data' => $category,
         ]);
     }
 
@@ -78,7 +78,7 @@ class CategoryController extends AbstractController
         if (count($violations) > 0) {
             return new JsonResponse([
                 'success' => false,
-                'errors' => $violations
+                'violations' => $violations
             ]);
         }
         $this->entityManager->persist($category);
@@ -87,7 +87,7 @@ class CategoryController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_category_delete', methods: ['DELETE'])]
-    public function delete(Request $request, Category $category): Response
+    public function delete(Category $category): Response
     {
         $this->entityManager->remove($category);
         $this->entityManager->flush();

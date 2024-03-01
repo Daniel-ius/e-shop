@@ -23,7 +23,7 @@ class AppFixtures extends Fixture
             $product->setDescription('Description '.$j);
             $product->setName('Product '.$j);
             $product->setPrice(rand(100,1000));
-            $product->setCategories($categories[rand(0,sizeof($categories)-1)]);
+            $product->setCategory($categories[rand(0,sizeof($categories)-1)]);
             $manager->persist($product);
         }
 

@@ -4,9 +4,11 @@ namespace App\Manager;
 
 use App\Entity\Cart;
 use App\Entity\Product;
+use App\Entity\User;
 use App\Factory\CartFactory;
 use App\Storage\CartSessionStorage;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class CartManager
 {
@@ -19,11 +21,13 @@ class CartManager
         $this->cartFactory=$cartFactory;
         $this->entityManager=$entityManager;
     }
-    public function getCurrentCart():Cart
+    public function getCurrentCartForUser($user):?Cart
     {
-        $cart=$this->cartSessionStorage->getCart();
+        $cart=$this->entityManager->getRepository(Cart::class)->findOneBy(['user'=>$user]);
         if (!$cart){
             $cart=$this->cartFactory->create();
+            $cart->setUser($user);
+            $this->save($cart);
         }
         return $cart;
     }
@@ -40,11 +44,20 @@ class CartManager
         $cart=$this->cartSessionStorage->getCart();
         $cart->removeItem($item);
         $this->entityManager->remove($item);
-        $this->entityManager->flush();
-        $this->cartSessionStorage->setCart($cart);
+        $this->save($cart);
+    }
+
+    public function addItem($item): void
+    {
+        $cart=$this->cartSessionStorage->getCart();
+        $cart->addItem($item);
+        $this->save($cart);
+
     }
     public function getManager():CartManager
     {
         return $this;
     }
+
+
 }

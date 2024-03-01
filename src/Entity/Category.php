@@ -67,7 +67,7 @@ class Category implements \JsonSerializable
     {
         if (!$this->Products->contains($product)) {
             $this->Products->add($product);
-            $product->setCategories($this);
+            $product->setCategory($this);
         }
 
         return $this;
@@ -77,8 +77,8 @@ class Category implements \JsonSerializable
     {
         if ($this->Products->removeElement($product)) {
             // set the owning side to null (unless already changed)
-            if ($product->getCategories() === $this) {
-                $product->setCategories(null);
+            if ($product->getCategory() === $this) {
+                $product->setCategory(null);
             }
         }
 

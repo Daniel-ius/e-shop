@@ -20,7 +20,10 @@ class Cart implements \JsonSerializable
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToMany(targetEntity: CartItems::class, mappedBy: 'carts')]
+    /**
+     * @var CartItems
+     */
+    #[ORM\OneToMany(targetEntity: CartItems::class, mappedBy: 'carts',cascade: ['persist'],orphanRemoval: true)]
     private Collection $items;
 
     #[ORM\Column(type: 'datetime')]
@@ -31,6 +34,19 @@ class Cart implements \JsonSerializable
     private string $status = self::STATUS_CART;
     #[ORM\Column(type: 'float',options: ['precision' => 10,'scale' => 2, 'default' => 0.0])]
     private ?float $total = 0;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'carts')]
+    private ?User $user;
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): void
+    {
+        $this->user = $user;
+    }
 
     public function __construct()
     {
@@ -50,13 +66,12 @@ class Cart implements \JsonSerializable
         return $this->items;
     }
 
-    public function addItem(cartitems $item): static
+    public function addItem(CartItems $item): static
     {
         if (!$this->items->contains($item)) {
             $this->items->add($item);
             $item->setCarts($this);
         }
-
         return $this;
     }
     public function getStatus(): ?string
@@ -95,7 +110,6 @@ class Cart implements \JsonSerializable
     public function setUpdatedAt(DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
-
         return $this;
     }
     public function getCreatedAt(): ?DateTimeInterface
@@ -106,7 +120,6 @@ class Cart implements \JsonSerializable
     public function setCreatedAt(DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
     public function setTotal(): static
@@ -120,13 +133,23 @@ class Cart implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        return array(
-            'id'=>$this->id,
-            'items'=>$this->items,
-            'createdAt'=>$this->createdAt,
-            'updatedAt'=>$this->updatedAt,
-            'total'=>$this->total,
-            'status'=>$this->status
-        );
+        // Include relevant data from CartItems instead of the entire collection
+        $cartItemsData = [];
+        foreach ($this->getItems() as $item) {
+            $cartItemsData[] = [
+                'id' => $item->getId(),
+                'name' => $item->getItem()->getName(), // Assuming item has a product relationship
+                'quantity' => $item->getQuantity(),
+                'price' => $item->getItem()->getPrice(),
+            ];
+        }
+        return [
+            'id' => $this->id,
+            'items' => $cartItemsData,
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->getUpdatedAt() ? $this->getUpdatedAt()->format('Y-m-d H:i:s') : null,
+            'total' => $this->getTotal(),
+            'status' => $this->getStatus(),
+        ];
     }
 }

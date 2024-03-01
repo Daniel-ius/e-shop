@@ -19,12 +19,12 @@ class CartFactory
         return $cart;
     }
 
-    public function createItem(Product $products):CartItems
+    public function createItem(Product $products,Cart $cart,?int $quantity):CartItems
     {
         $item=new CartItems();
         $item->setItem($products);
-        $item->setCarts($this->create());
-        $item->setQuantity(1);
+        $item->setCarts($cart);
+        $item->setQuantity($quantity ?? 1);
         $item->setTotalPrice();
         return $item;
     }

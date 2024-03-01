@@ -3,31 +3,41 @@
 namespace App\Entity;
 
 use App\Repository\ProductsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: ProductsRepository::class)]
 #[ORM\Table(name: 'products')]
-class Product
+#[UniqueEntity(fields: ['name'], message: 'Product with this name already exists')]
+class Product implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
     #[ORM\Column(type: 'float', precision: 2)]
+    #[NotBlank]
+    #[Assert\Positive]
     private ?float $price = null;
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
+    #[NotBlank]
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'Products')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Category $categories = null;
+    private ?Category $category = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private $images = null;
+    private ?array $images=[];
+
 
     public function getPrice(): ?float
     {
@@ -64,27 +74,38 @@ class Product
         return $this->id;
     }
 
-    public function getCategories(): ?Category
+    public function getCategory(): ?Category
     {
-        return $this->categories;
+        return $this->category;
     }
 
-    public function setCategories(?Category $categories): static
+    public function setCategory(?Category $categories): static
     {
-        $this->categories = $categories;
+        $this->category = $categories;
 
         return $this;
     }
 
-    public function getImages()
+    public function getImages(): ?Collection
     {
         return $this->images;
     }
 
-    public function setImages($images): static
+    public function setImages(?array $images): void
     {
         $this->images = $images;
+    }
 
-        return $this;
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'price' => $this->price,
+            'category' => $this->category->getName(),
+            'images' => $this->images,
+        ];
     }
 }
