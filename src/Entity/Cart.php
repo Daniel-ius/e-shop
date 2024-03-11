@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CartsRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -122,32 +123,38 @@ class Cart implements \JsonSerializable
         $this->createdAt = $createdAt;
         return $this;
     }
+
+    public function resetTotal(): static
+    {
+        $this->total=0;
+        return $this;
+    }
+
     public function setTotal(): static
     {
         foreach ($this->getItems() as $item) {
             $this->total += $item->getTotalPrice();
         };
-
         return $this;
     }
 
     public function jsonSerialize(): mixed
     {
-        // Include relevant data from CartItems instead of the entire collection
         $cartItemsData = [];
         foreach ($this->getItems() as $item) {
             $cartItemsData[] = [
                 'id' => $item->getId(),
-                'name' => $item->getItem()->getName(), // Assuming item has a product relationship
+                'name' => $item->getItem()->getName(),
                 'quantity' => $item->getQuantity(),
                 'price' => $item->getItem()->getPrice(),
+                'totalPrice'=>$item->getTotalPrice(),
             ];
         }
         return [
             'id' => $this->id,
             'items' => $cartItemsData,
             'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
-            'updatedAt' => $this->getUpdatedAt() ? $this->getUpdatedAt()->format('Y-m-d H:i:s') : null,
+            'updatedAt' => $this->getUpdatedAt()?->format('Y-m-d H:i:s'),
             'total' => $this->getTotal(),
             'status' => $this->getStatus(),
         ];

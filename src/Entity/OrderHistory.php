@@ -6,7 +6,7 @@ use App\Repository\OrdersHistoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrdersHistoryRepository::class)]
-class OrderHistory
+class OrderHistory implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -47,5 +47,18 @@ class OrderHistory
         $this->cart = $cart;
 
         return $this;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        $cartData=[];
+        foreach ( $this->getCart() as $item) {
+            $cartData=$item->jsonSerialize();
+        }
+        return [
+            'id' => $this->id,
+            'user' => $this->user->getId(),
+            'cart' => $this->cart,
+        ];
     }
 }

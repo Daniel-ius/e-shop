@@ -6,3 +6,4 @@ lexik_jwt_authentication:
         check_path: /api/login_check
         username_path: username
         password_path: security.credentials.password
+    token_ttl: '%env(JWT_EXPIRATION_DEV)%'
