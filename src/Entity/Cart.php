@@ -13,8 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'carts')]
 class Cart implements \JsonSerializable
 {
-    const STATUS_CART='cart';
-    const STATUS_CHECKOUT = 'checkout';
+    public const STATUS_CART='cart';
+    public const STATUS_CHECKOUT = 'checkout';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -138,7 +138,7 @@ class Cart implements \JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         $cartItemsData = [];
         foreach ($this->getItems() as $item) {

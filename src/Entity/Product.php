@@ -3,10 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\ProductsRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -14,7 +13,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 #[ORM\Entity(repositoryClass: ProductsRepository::class)]
 #[ORM\Table(name: 'products')]
 #[UniqueEntity(fields: ['name'], message: 'Product with this name already exists')]
-class Product implements \JsonSerializable
+class Product implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -31,7 +30,7 @@ class Product implements \JsonSerializable
     #[NotBlank]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(inversedBy: 'Products')]
+    #[ORM\ManyToOne(targetEntity: Category::class,inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
@@ -86,7 +85,7 @@ class Product implements \JsonSerializable
         return $this;
     }
 
-    public function getImages(): ?Collection
+    public function getImages(): array
     {
         return $this->images;
     }
@@ -96,8 +95,7 @@ class Product implements \JsonSerializable
         $this->images = $images;
     }
 
-
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,
@@ -105,7 +103,7 @@ class Product implements \JsonSerializable
             'description' => $this->description,
             'price' => $this->price,
             'category' => $this->category->getName(),
-            'images' => $this->images,
+            'images' => $this->images
         ];
     }
 }

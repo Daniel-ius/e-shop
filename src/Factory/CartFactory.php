@@ -5,6 +5,7 @@ namespace App\Factory;
 use App\Entity\CartItems;
 use App\Entity\Cart;
 use App\Entity\Product;
+use DateTime;
 
 class CartFactory
 {
@@ -13,8 +14,8 @@ class CartFactory
         $cart = new Cart();
         $cart
             ->setStatus(Cart::STATUS_CART)
-            ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime())
+            ->setCreatedAt(new DateTime())
+            ->setUpdatedAt(new DateTime())
             ->setTotal();
         return $cart;
     }

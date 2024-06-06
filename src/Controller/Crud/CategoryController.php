@@ -5,13 +5,14 @@ namespace App\Controller\Crud;
 use App\Entity\Category;
 use App\Repository\CategoriesRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use OpenApi\Attributes as OA;
+
 #[Route('/categories')]
 class CategoryController extends AbstractController
 {
@@ -25,12 +26,13 @@ class CategoryController extends AbstractController
         $this->categoriesRepository = $categoriesRepository;
         $this->entityManager = $entityManager;
     }
+
     #[OA\Get(
         path: '/categories',
         description: 'Gets all categories',
-        responses:[
+        responses: [
             new OA\Response(
-                response: 200,description: 'success'
+                response: 200, description: 'success'
             )
         ]
     )]
@@ -40,19 +42,29 @@ class CategoryController extends AbstractController
         $response = [];
         $categories = $this->categoriesRepository->findAll();
         foreach ($categories as $category) {
-            $response[] = json_encode($category);
+            try {
+                $response[] = json_encode($category, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES |
+                    JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+                    | JSON_NUMERIC_CHECK);
+            } catch (\JsonException $e) {
+                return new JsonResponse([
+                    'success' => false,
+                    'errors' => $e->getMessage()
+                ]);
+            }
         }
         return new JsonResponse([
             'success' => true,
             'data' => $response,
         ]);
     }
+
     #[OA\Get(
         path: '/categories/id',
         description: 'Gets a category by its id',
-        responses:[
+        responses: [
             new OA\Response(
-                response: 200,description: 'success'
+                response: 200, description: 'success'
             )
         ]
     )]
@@ -64,26 +76,36 @@ class CategoryController extends AbstractController
             'data' => $category,
         ]);
     }
+
     #[OA\Post(
         path: '/categories/create',
         description: 'Creates a category',
-        responses:[
+        responses: [
             new OA\Response(
-                response: 200,description: 'success'
+                response: 200, description: 'success'
             )
         ]
     )]
     #[Route('/create', name: 'app_category_new', methods: ['GET', 'POST'])]
     public function create(Request $request,): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        try {
+            $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES |
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+                | JSON_NUMERIC_CHECK);
+        } catch (\JsonException $e) {
+            return new JsonResponse([
+                'success' => false,
+                'errors' => $e->getMessage()
+            ]);
+        }
         $category = new Category();
         $category->setName($data['name']);
         $violations = $this->validator->validate($category);
         if (count($violations) > 0) {
             return $this->json([
                 'success' => false,
-                'violations' => $violations
+                'errors' => $violations
             ]);
         }
         $this->entityManager->persist($category);
@@ -92,37 +114,48 @@ class CategoryController extends AbstractController
             'success' => true,
         ]);
     }
-    #[OA\PUT(
+
+    #[OA\Put(
         path: '/categories/id/edit',
         description: 'Edits a category',
-        responses:[
+        responses: [
             new OA\Response(
-                response: 200,description: 'success'
+                response: 200, description: 'success'
             )
         ]
     )]
     #[Route('/{id}/edit', name: 'app_category_edit', methods: ['PUT'])]
     public function edit(Request $request, Category $category): Response
     {
-        $data = json_decode($request->getContent(), true);
+        try {
+            $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES |
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+                | JSON_NUMERIC_CHECK);
+        } catch (\JsonException $e) {
+            return new JsonResponse([
+                'success' => false,
+                'errors' => $e->getMessage()
+            ]);
+        }
         $category->setName($data['name']);
         $violations = $this->validator->validate($category);
         if (count($violations) > 0) {
             return new JsonResponse([
                 'success' => false,
-                'violations' => $violations
+                'errors' => $violations
             ]);
         }
         $this->entityManager->persist($category);
         $this->entityManager->flush();
         return new JsonResponse(['success' => true]);
     }
+
     #[OA\Delete(
         path: '/categories/id',
         description: 'Deletes a category by its id',
-        responses:[
+        responses: [
             new OA\Response(
-                response: 200,description: 'success'
+                response: 200, description: 'success'
             )
         ]
     )]

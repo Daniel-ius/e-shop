@@ -8,8 +8,7 @@ use App\Entity\OrderHistory;
 use App\Entity\Product;
 use App\Entity\User;
 use App\Factory\CartFactory;
-use App\Storage\CartSessionStorage;
-use Cassandra\Date;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use function Symfony\Component\Translation\t;
@@ -61,7 +60,7 @@ class CartManager
     {
         $items=$cart->getItems();
         foreach ($items as $item) {
-            if($item->getItem()->getId()==$product->getItem()->getId()){
+            if($item->getItem()->getId()===$product->getItem()->getId()){
                 $item->setQuantity($item->getQuantity()+1);
                 $item->setTotalPrice();
                 $this->save($cart);
@@ -84,13 +83,14 @@ class CartManager
 
     public function checkoutCart($user,Cart $cart):bool
     {
-        if ($cart->getItems()->count() == 0) {
+        if ($cart->getItems()->count() === 0) {
             return false;
         }
         $cart->setStatus(Cart::STATUS_CHECKOUT);
         $orderHistory=new OrderHistory();
         $orderHistory->setUser($user);
         $orderHistory->setCart($cart);
+        $orderHistory->setDateTime(new \DateTimeImmutable());
         $this->entityManager->persist($orderHistory);
         $this->entityManager->flush();
         return true;
