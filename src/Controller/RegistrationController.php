@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use function Symfony\Component\Translation\t;
 
 class RegistrationController extends AbstractController
 {
@@ -33,15 +34,22 @@ class RegistrationController extends AbstractController
     ]
     )]
     #[Route('/registration', name: 'app_registration', methods: ['POST'])]
-    public function newUser(Request $request): Response
+    public function newUser(Request $request): JsonResponse
     {
-        $data=json_decode($request->getContent(),true);
+        try {
+            $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return new JsonResponse([
+                'success' => false,
+                'errors' => $e->getMessage()
+            ]);
+        }
         $user=$this->userFactory->create($data,$this->userPasswordHasher);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        return $this->json([
+        return new JsonResponse([
+            'success'=>true,
             'message'=>'User created',
-            'user'=>$user
         ]);
     }
 }

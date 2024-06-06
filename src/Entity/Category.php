@@ -6,6 +6,7 @@ use App\Repository\CategoriesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -13,7 +14,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 #[ORM\Entity(repositoryClass: CategoriesRepository::class)]
 #[ORM\Table(name: 'categories')]
 #[UniqueEntity(fields: ['name'], message: 'This name is already taken')]
-class Category implements \JsonSerializable
+class Category implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -30,12 +31,12 @@ class Category implements \JsonSerializable
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'categories', orphanRemoval: true)]
-    private Collection $Products;
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'category', orphanRemoval: true)]
+    private Collection $products;
 
     public function __construct()
     {
-        $this->Products = new ArrayCollection();
+        $this->products = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -60,13 +61,13 @@ class Category implements \JsonSerializable
      */
     public function getProducts(): Collection
     {
-        return $this->Products;
+        return $this->products;
     }
 
     public function addProduct(Product $product): static
     {
-        if (!$this->Products->contains($product)) {
-            $this->Products->add($product);
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
             $product->setCategory($this);
         }
 
@@ -75,11 +76,8 @@ class Category implements \JsonSerializable
 
     public function removeProduct(Product $product): static
     {
-        if ($this->Products->removeElement($product)) {
-            // set the owning side to null (unless already changed)
-            if ($product->getCategory() === $this) {
-                $product->setCategory(null);
-            }
+        if ($this->products->removeElement($product) && $product->getCategory() === $this) {
+            $product->setCategory(null);
         }
 
         return $this;
@@ -90,7 +88,7 @@ class Category implements \JsonSerializable
         return array(
             'id'=>$this->id,
             'name'=>$this->name,
-            'products'=>$this->Products
+            'products'=>$this->products
         );
     }
 }

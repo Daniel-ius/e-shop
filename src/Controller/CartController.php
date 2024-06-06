@@ -49,7 +49,16 @@ class CartController extends AbstractController
     public function addToCart(Request $request): JsonResponse
     {
         $user = $this->security->getUser();
-        $data = json_decode($request->getContent(), true);
+        try {
+            $data = json_decode($request->getContent(), true, 512,  JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+                | JSON_NUMERIC_CHECK);
+        } catch (\JsonException $e) {
+            return new JsonResponse([
+                'success' => false,
+                'errors' => $e->getMessage()
+            ]);
+        }
         $product = $this->entityManager->getRepository(Product::class)->find($data['productId']);
         if (!$product) {
             return $this->json([
@@ -84,7 +93,7 @@ class CartController extends AbstractController
         $cart = $this->cartManager->getCurrentCartForUser($user);
         return $this->json([
             'success' => true,
-            'cart' => $cart,
+            'data' => $cart,
         ]);
     }
 
@@ -105,7 +114,7 @@ class CartController extends AbstractController
         $orderHistory = $this->entityManager->getRepository(OrderHistory::class)->findBy(['user' => $user->getId()]);
         return $this->json([
             'success' => true,
-            'orderHistory' => $orderHistory,
+            'data' => $orderHistory,
         ]);
     }
 

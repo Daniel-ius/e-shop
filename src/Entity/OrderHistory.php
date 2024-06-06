@@ -19,6 +19,8 @@ class OrderHistory implements \JsonSerializable
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Cart $cart = null;
 
+    #[ORM\Column()]
+    private \DateTimeImmutable $dateTime;
 
     public function getId(): ?int
     {
@@ -49,16 +51,23 @@ class OrderHistory implements \JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
-        $cartData=[];
-        foreach ( $this->getCart() as $item) {
-            $cartData=$item->jsonSerialize();
-        }
         return [
             'id' => $this->id,
             'user' => $this->user->getId(),
             'cart' => $this->cart,
+            'date'=>$this->dateTime,
         ];
+    }
+
+    public function getDateTime(): \DateTimeImmutable
+    {
+        return $this->dateTime;
+    }
+
+    public function setDateTime(\DateTimeImmutable $dateTime): void
+    {
+        $this->dateTime = $dateTime;
     }
 }

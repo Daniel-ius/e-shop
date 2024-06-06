@@ -20,9 +20,9 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 #[UniqueEntity(fields: ['email'], message: 'Email already exist')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    const STATUS_ACTIVE = 'active';
-    const STATUS_DEACTIVATED = 'deactivated';
-    const STATUS_DELETED = 'deleted';
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_DEACTIVATED = 'deactivated';
+    public const STATUS_DELETED = 'deleted';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -36,7 +36,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     /**
-     * @var string The hashed password
+     * @var string|null The hashed password
      */
     #[ORM\Column]
     #[NotBlank]
@@ -87,7 +87,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[NotBlank]
-    private ?\DateTimeInterface $creationDate = null;
+    private ?DateTimeInterface $creationDate = null;
 
     #[ORM\OneToMany(targetEntity: Cart::class, mappedBy: 'user',cascade: ['persist','remove'])]
     private Collection $carts;
@@ -290,6 +290,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->status;
     }
 
+    public function setId():void
+    {
+        
+    }
     public function setStatus(string $status): static
     {
         $this->status = $status;
@@ -317,29 +321,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeOrdersHistory(OrderHistory $ordersHistory): static
     {
-        if ($this->ordersHistories->removeElement($ordersHistory)) {
-            // set the owning side to null (unless already changed)
-            if ($ordersHistory->getUser() === $this) {
-                $ordersHistory->setUser(null);
-            }
+        if ($this->ordersHistories->removeElement($ordersHistory) && $ordersHistory->getUser() === $this) {
+            $ordersHistory->setUser(null);
         }
 
         return $this;
     }
 
-    public function getCreationDate(): ?\DateTimeInterface
+    public function getCreationDate(): ?DateTimeInterface
     {
         return $this->creationDate;
     }
 
-    public function setCreationDate(\DateTimeInterface $creationDate): static
+    public function setCreationDate(DateTimeInterface $creationDate): static
     {
         $this->creationDate = $creationDate;
 
         return $this;
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,

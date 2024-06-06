@@ -30,7 +30,7 @@ class ProductController extends AbstractController
     #[OA\Get(
         path: '/products',
         description: 'Gets all products',
-        responses:[
+        responses: [
             new OA\Response(
                 response: 200,
                 description: 'success'
@@ -43,17 +43,28 @@ class ProductController extends AbstractController
         $response = [];
         $products = $this->productsRepository->findAll();
         foreach ($products as $product) {
-            $response[] = json_encode($product);
+            try {
+                $response[] = json_encode($product,  JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|
+                    JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+                    | JSON_NUMERIC_CHECK);
+            } catch (\JsonException $e) {
+                return new JsonResponse([
+                    'success' => false,
+                    'errors' => $e->getMessage()
+                ]);
+            }
+
         }
-        return $this->json([
+        return new JsonResponse([
             'success' => true,
             'data' => $response
         ]);
     }
+
     #[OA\Get(
         path: '/products/id',
         description: 'Gets a product by that id',
-        responses:[
+        responses: [
             new OA\Response(
                 response: 200,
                 description: 'success'
@@ -63,16 +74,26 @@ class ProductController extends AbstractController
     #[Route(path: '/{id}', methods: ['GET'])]
     public function getProductByID(Product $product): JsonResponse
     {
-        return $this->json([
-            'success' => true,
-            'data' => json_encode($product)
-        ]);
+        try {
+            return new JsonResponse([
+                'success' => true,
+                'data' => json_encode($product, JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|
+                    JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+                     | JSON_NUMERIC_CHECK)
+            ]);
+        } catch (\JsonException $e) {
+            return new JsonResponse([
+                'success' => false,
+                'errors' => $e->getMessage()
+            ]);
+        }
     }
+
     #[OA\Delete(
         path: '/products/id',
         description: 'Deletes a product by id',
         responses: [
-            new OA\Response(response: 200,description: 'success')
+            new OA\Response(response: 200, description: 'success')
         ]
     )]
     #[Route('/{id}', methods: ['DELETE'])]
@@ -80,13 +101,13 @@ class ProductController extends AbstractController
     {
         $this->entityManager->remove($product);
         $this->entityManager->flush();
-        return new JsonResponse(['success' => true]);
+        return new JsonResponse(['success' => true,'message'=>"Product was deleted"]);
     }
 
     #[OA\Get(
         path: '/products/[create,id/edit]',
         description: 'Creates a new product or edits already existing product',
-        responses:[
+        responses: [
             new OA\Response(
                 response: 200, description: 'success'
             )
@@ -96,26 +117,35 @@ class ProductController extends AbstractController
     public function create_edit(Request $request, ?Product $productEdit): JsonResponse
     {
         $product = $productEdit ?? new Product();
-        $data = json_decode($request->getContent(), true);
+        try {
+            $data = json_decode($request->getContent(), true, 512,  JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+                | JSON_NUMERIC_CHECK);
+        } catch (\JsonException $e) {
+            return new JsonResponse([
+                'success' => false,
+                'errors' => $e->getMessage()
+            ]);
+        }
         $properties = [];
         $values = [];
         foreach ($data as $property => $value) {
             $properties[] = $property;
             $values[] = $value;
-            if (property_exists($product, $property)) {
-                if($property==='category'){
-                    $product->setCategory($this->entityManager->getRepository(Category::class)->find($value));
-                }else{
-                    $setter = 'set' . ucfirst($property);
-                    $product->$setter($value);
-                }
-            } else {
+            if (!property_exists($product, $property)) {
                 return new JsonResponse([
                     'success' => false,
                     'errors' => "Property $property not found",
                     'properties' => $properties,
                     'values' => $values
                 ]);
+            }
+
+            if ($property === 'category') {
+                $product->setCategory($this->entityManager->getRepository(Category::class)->find($value));
+            } else {
+                $setter = 'set' . ucfirst($property);
+                $product->$setter($value);
             }
         }
         $violation = $this->validator->validate($product);
