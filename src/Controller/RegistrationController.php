@@ -4,14 +4,11 @@ namespace App\Controller;
 
 use App\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
-use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use function Symfony\Component\Translation\t;
 
 class RegistrationController extends AbstractController
 {
@@ -27,12 +24,6 @@ class RegistrationController extends AbstractController
         $this->userFactory=$userFactory;
     }
 
-    #[OA\Post(
-        path:'/registration',
-        description: "Registers a new user",responses: [
-            new OA\Response(response: 200,description: 'success')
-    ]
-    )]
     #[Route('/registration', name: 'app_registration', methods: ['POST'])]
     public function newUser(Request $request): JsonResponse
     {

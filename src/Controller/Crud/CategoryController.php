@@ -5,7 +5,6 @@ namespace App\Controller\Crud;
 use App\Entity\Category;
 use App\Repository\CategoriesRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,15 +26,6 @@ class CategoryController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    #[OA\Get(
-        path: '/categories',
-        description: 'Gets all categories',
-        responses: [
-            new OA\Response(
-                response: 200, description: 'success'
-            )
-        ]
-    )]
     #[Route('/', name: 'app_category_index', methods: ['GET'])]
     public function index(): JsonResponse
     {
@@ -59,15 +49,6 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    #[OA\Get(
-        path: '/categories/id',
-        description: 'Gets a category by its id',
-        responses: [
-            new OA\Response(
-                response: 200, description: 'success'
-            )
-        ]
-    )]
     #[Route('/{id}', name: 'app_category_show', methods: ['GET'])]
     public function show(Category $category): Response
     {
@@ -77,15 +58,6 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    #[OA\Post(
-        path: '/categories/create',
-        description: 'Creates a category',
-        responses: [
-            new OA\Response(
-                response: 200, description: 'success'
-            )
-        ]
-    )]
     #[Route('/create', name: 'app_category_new', methods: ['GET', 'POST'])]
     public function create(Request $request,): JsonResponse
     {
@@ -115,15 +87,6 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    #[OA\Put(
-        path: '/categories/id/edit',
-        description: 'Edits a category',
-        responses: [
-            new OA\Response(
-                response: 200, description: 'success'
-            )
-        ]
-    )]
     #[Route('/{id}/edit', name: 'app_category_edit', methods: ['PUT'])]
     public function edit(Request $request, Category $category): Response
     {
@@ -150,15 +113,6 @@ class CategoryController extends AbstractController
         return new JsonResponse(['success' => true]);
     }
 
-    #[OA\Delete(
-        path: '/categories/id',
-        description: 'Deletes a category by its id',
-        responses: [
-            new OA\Response(
-                response: 200, description: 'success'
-            )
-        ]
-    )]
     #[Route('/{id}', name: 'app_category_delete', methods: ['DELETE'])]
     public function delete(Category $category): Response
     {
