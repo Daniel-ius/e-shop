@@ -1,3 +1,34 @@
+## Prerequisites
+1. Docker or Symfony cli
+2. PHP 8.2
+
+
+## Installation
+  ```bash
+  git clone https://github.com/Daniel-ius/e-shop.git
+  cd e-shop
+  ```
+
+1. For docker run
+  ```bash
+  docker-compose up -d
+  ```
+  ```bash 
+  docker-compose exec app composer install
+  ```
+  ```bash
+  docker-compose exec app php bin/console doctrine:migrations:migrate --no-interaction
+  docker-compose exec app php bin/console doctrine:fixtures:load --no-interaction 
+  ```
+2. For symfony cli run
+  ```bash 
+  composer install
+  ```
+  ```bash
+  php bin/console doctrine:migrations:migrate --no-interaction
+  php bin/console doctrine:fixtures:load --no-interaction 
+  ```
+
 # Routes
 ## CategoryController
 
@@ -115,17 +146,20 @@
 ### Create Category
 #### To create a new category, make a POST request to /categories/create with the category data in the request body. The request body should be in JSON format:
 
-
-`{
+````json
+{
   "name": "Category Name"
-}`
+}
+````
 
 ### Edit Category
 #### To edit an existing category, make a PUT request to /categories/{id}/edit with the updated category data in the request body:
 
-`{
+```json
+{
   "name": "Updated Category Name"
-}`
+}
+```
 
 ## Delete Category
 
@@ -141,12 +175,13 @@
 
 #### To create a new product or edit an existing product, make a POST or PUT request to /products/create or /products/{id}/edit with the product data in the request body. The request body should be in JSON format:
 
-`{
+```json
+{
   "name": "Product Name",
   "category": "Category ID",
   "price": 100
 }
-`
+```
 ## Delete Product
 
 #### To delete a product, make a DELETE request to /products/{id}, replacing {id} with the product's ID. The response will confirm the deletion. 
@@ -156,10 +191,12 @@
 
 #### To add a product to the cart, make a POST request to /cart/add with the product data in the request body. The request body should be in JSON format:
 
-`{
+```json
+{
 "productId": "Product ID",
 "quantity": 1
-}`
+}
+```
 
 ### Get Cart
 #### To get the current user's cart, make a GET request to /cart/get. The response will be a JSON object containing the cart data.
