@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route(path:["/api/v1"])]
 class RegistrationController extends AbstractController
 {
     private EntityManagerInterface $entityManager;

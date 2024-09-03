@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CartsRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;

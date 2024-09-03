@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route(path:["/api/v1"])]
 class UserController extends AbstractController
 {
     private Security $security;
@@ -33,7 +34,7 @@ class UserController extends AbstractController
         if (!isset($user)){
             return new JsonResponse([
                 'success' => false,
-                'errors' => 'User doesnt exits'
+                'errors' => "User doesn't exits"
             ]);
         }
         return $this->json($user);
@@ -46,7 +47,7 @@ class UserController extends AbstractController
         if (!isset($user)){
             return new JsonResponse([
                 'success' => false,
-                'errors' => 'User doesnt exits'
+                'errors' => "User doesn't exits"
             ]);
         }
         try {
@@ -98,7 +99,7 @@ class UserController extends AbstractController
         if (!isset($user)){
             return new JsonResponse([
                 'success' => false,
-                'errors' => 'User doesnt exits'
+                'errors' => "User doesn't exits"
             ]);
         }
         try {

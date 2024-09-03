@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/cart', name: 'app_cart')]
+#[Route(path:['/api/v1/cart'],name:'app_cart')]
 class CartController extends AbstractController
 {
     private CartManager $cartManager;
@@ -30,8 +30,18 @@ class CartController extends AbstractController
         $this->cartFactory = $cartFactory;
     }
 
+    #[Route(path:['/'], methods: ['GET'])]
+    public function getCart(Request $request): JsonResponse
+    {
+        $user = $this->security->getUser();
+        $cart = $this->cartManager->getCurrentCartForUser($user);
+        return $this->json([
+            'success' => true,
+            'data' => $cart,
+        ]);
+    }
 
-    #[Route('/add', name: 'app_to_cart', methods: ['POST'])]
+    #[Route(path: ['/add'], methods: ['POST'])]
     public function addToCart(Request $request): JsonResponse
     {
         $user = $this->security->getUser();
@@ -63,19 +73,7 @@ class CartController extends AbstractController
         ]);
     }
 
-    #[Route('/get', name: 'app_get_cart', methods: ['GET'])]
-    public function getCart(Request $request): JsonResponse
-    {
-        $user = $this->security->getUser();
-        $cart = $this->cartManager->getCurrentCartForUser($user);
-        return $this->json([
-            'success' => true,
-            'data' => $cart,
-        ]);
-    }
-
-
-    #[Route('/orderHistory', name: 'app_get_order_history', methods: ['GET'])]
+    #[Route(path:['/orders'], methods: ['GET'])]
     public function getOrderHistory(Request $request): JsonResponse
     {
         $user = $this->security->getUser();
@@ -87,7 +85,7 @@ class CartController extends AbstractController
         ]);
     }
 
-    #[Route('/checkout', name: 'app_checkout', methods: ['POST'])]
+    #[Route(path:['/checkout'], methods: ['POST'])]
     public function checkout(Request $request): JsonResponse
     {
         $user = $this->security->getUser();

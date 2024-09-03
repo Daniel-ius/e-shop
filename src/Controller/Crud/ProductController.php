@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[Route(path: '/products')]
+#[Route(path: ['/api/v1/products'],name:'app_product')]
 class ProductController extends AbstractController
 {
     private ValidatorInterface $validator;
@@ -33,7 +33,7 @@ class ProductController extends AbstractController
         $products = $this->productsRepository->findAll();
         foreach ($products as $product) {
             try {
-                $response[] = json_encode($product,  JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|
+                $response[] = json_encode($product,  JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES |
                     JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
                     | JSON_NUMERIC_CHECK);
             } catch (\JsonException $e) {
@@ -42,7 +42,6 @@ class ProductController extends AbstractController
                     'errors' => $e->getMessage()
                 ]);
             }
-
         }
         return new JsonResponse([
             'success' => true,
@@ -56,9 +55,9 @@ class ProductController extends AbstractController
         try {
             return new JsonResponse([
                 'success' => true,
-                'data' => json_encode($product, JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|
+                'data' => json_encode($product, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES |
                     JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
-                     | JSON_NUMERIC_CHECK)
+                    | JSON_NUMERIC_CHECK)
             ]);
         } catch (\JsonException $e) {
             return new JsonResponse([
@@ -73,15 +72,16 @@ class ProductController extends AbstractController
     {
         $this->entityManager->remove($product);
         $this->entityManager->flush();
-        return new JsonResponse(['success' => true,'message'=>"Product was deleted"]);
+        return new JsonResponse(['success' => true, 'message' => "Product was deleted"]);
     }
 
     #[Route(path: ['/{id}/edit', '/create'], methods: ['GET', 'POST', 'PUT'])]
-    public function create_edit(Request $request, ?Product $productEdit): JsonResponse
+    public function createEdit(Request $request, ?Product $productEdit): JsonResponse
     {
         $product = $productEdit ?? new Product();
+
         try {
-            $data = json_decode($request->getContent(), true, 512,  JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|
+            $data = json_decode($request->getContent(), true, 512,  JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES |
                 JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
                 | JSON_NUMERIC_CHECK);
         } catch (\JsonException $e) {
