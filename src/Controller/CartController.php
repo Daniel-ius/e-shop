@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path:['/api/v1/cart'],name:'app_cart')]
+#[Route(path:'/api/v1/cart',name:'app_cart')]
 class CartController extends AbstractController
 {
     private CartManager $cartManager;

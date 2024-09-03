@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[Route(path: ['/api/v1/products'],name:'app_product')]
+#[Route(path: '/api/v1/products',name:'app_product')]
 class ProductController extends AbstractController
 {
     private ValidatorInterface $validator;
